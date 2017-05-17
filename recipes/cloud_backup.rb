@@ -35,6 +35,7 @@ end
 python_virtualenv node['postgresql']['cloud_backup']['wal_e_path']
 
 python_pip 'azure' do
+  version "1.0.3"    # version pinned for wal-e==0.8.1
   virtualenv node['postgresql']['cloud_backup']['wal_e_path']
 end
 
