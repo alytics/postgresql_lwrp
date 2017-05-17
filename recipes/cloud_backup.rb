@@ -34,6 +34,10 @@ end
 
 python_virtualenv node['postgresql']['cloud_backup']['wal_e_path']
 
+python_pip 'azure' do
+  virtualenv node['postgresql']['cloud_backup']['wal_e_path']
+end
+
 case node['postgresql']['cloud_backup']['install_source']
 when 'github'
   archive_url = "#{node['postgresql']['cloud_backup']['github_repo']}/archive/#{node['postgresql']['cloud_backup']['version']}.zip"
