@@ -5,9 +5,16 @@ end
 group :unit do
   gem 'chefspec'
 end
+group :inspec do
+  gem 'inspec'
+  gem 'kitchen-inspec'
+end
 group :lint do
   gem 'foodcritic'
-  gem 'rubocop'
+  gem 'cookstyle'
+end
+group :kitchen_docker do
+  gem 'kitchen-docker'
 end
 group :kitchen_common do
   gem 'test-kitchen'
@@ -21,4 +28,7 @@ group :kitchen_cloud do
 end
 group :aws do
   gem 'aws-sdk', '2.2.34'
+end
+group :deploy do
+  gem 'stove'
 end

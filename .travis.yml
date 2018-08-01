@@ -1,35 +1,73 @@
+services:
+  - docker
+
 language: ruby
 cache: bundler
 sudo: false
 rvm:
-- 2.2.2
-bundler_args: "--without kitchen_vagrant"
+- 2.5.1
+bundler_args: "--without kitchen_vagrant kitchen_cloud aws"
+
 before_install:
-- openssl aes-256-cbc -K $encrypted_b45d6f20bf91_key -iv $encrypted_b45d6f20bf91_iv
-  -in .travis/secret_keys.tar.enc -out .travis/secret_keys.tar -d
-- tar xf .travis/secret_keys.tar -C .travis
-- mv .travis/travis_rsa ~/.ssh/id_rsa
-script:
-- bundle exec rubocop
-- bundle exec foodcritic -f any .
-- bundle exec rspec
-- bundle exec kitchen test -c 10 -d always
-deploy:
-  edge:
-    source: Artemmkin/dpl
-    branch: master
-  provider: chef-supermarket
-  user_id: express42
-  client_key: ".travis/express42.pem"
-  cookbook_category: Databases
-  skip_cleanup: true
-  on:
-    tags: true
+  - gem update --system
+  - gem install bundler
+
+script: "bundle exec kitchen test ${INSTANCE} --destroy=always"
+
+env:
+  global:
+  - KITCHEN_YAML=.kitchen.docker.yml
+  - secure: Ag8Zn5lQxHrj+Xi79FAKiyq1mJxos+eQe6rL3xrk0aDL10YuAbbYz32jOce1MlIvTsEl4uaVQXQXIJmHjbCqzf5m61FYqRMqVhQ8B+Sh3AYiGe1MYpl9KJSYleyJPqJBDBZ/xfLpDKX7PoUCgXpHm2ZION2YFBHdRx3tN/lejoU=
+  - secure: FAO//JQqC+rY3ce19GjA/KWpNskY2nT+8i83WyueHZ20zIc6FMdkWOs+WcEcnfcXDG8GBCqiIG+wF1GajUWirWo+aEIjIguADJhZwuLqD4g6KDmRW9p1MB2b3XDvAbvzze7yy6uG9GcuhiKo+J3S33YugFD59UHGa7hCGeEukAo=
+  matrix:
+  - INSTANCE=pg-10-chef14-ubuntu-1804-docker
+  - INSTANCE=pg-10-chef14-ubuntu-1604-docker
+  - INSTANCE=pg-10-chef14-ubuntu-1404-docker
+  - INSTANCE=pg-10-chef14-debian-9-docker
+  - INSTANCE=pg-10-chef14-debian-8-docker
+  - INSTANCE=pg-96-chef14-ubuntu-1804-docker
+  - INSTANCE=pg-96-chef14-ubuntu-1604-docker
+  - INSTANCE=pg-96-chef14-ubuntu-1404-docker
+  - INSTANCE=pg-96-chef14-debian-9-docker
+  - INSTANCE=pg-96-chef14-debian-8-docker
+  - INSTANCE=pg-94-chef14-ubuntu-1804-docker
+  - INSTANCE=pg-94-chef14-ubuntu-1604-docker
+  - INSTANCE=pg-94-chef14-ubuntu-1404-docker
+  - INSTANCE=pg-94-chef14-debian-9-docker
+  - INSTANCE=pg-94-chef14-debian-8-docker
+  - INSTANCE=pg-91-chef14-ubuntu-1604-docker
+  - INSTANCE=pg-91-chef14-ubuntu-1404-docker
+  - INSTANCE=pg-91-chef14-debian-8-docker
+  - INSTANCE=pg-10-chef13-ubuntu-1804-docker
+  - INSTANCE=pg-10-chef13-ubuntu-1604-docker
+  - INSTANCE=pg-10-chef13-ubuntu-1404-docker
+  - INSTANCE=pg-10-chef13-debian-9-docker
+  - INSTANCE=pg-10-chef13-debian-8-docker
+  - INSTANCE=pg-96-chef13-ubuntu-1804-docker
+  - INSTANCE=pg-96-chef13-ubuntu-1604-docker
+  - INSTANCE=pg-96-chef13-ubuntu-1404-docker
+  - INSTANCE=pg-96-chef13-debian-9-docker
+  - INSTANCE=pg-96-chef13-debian-8-docker
+
+
+jobs:
+  include:
+    - stage: lint
+      script:
+        - bundle exec cookstyle --version
+        - bundle exec cookstyle
+        - bundle exec foodcritic --version
+        - bundle exec foodcritic --contex --epic-fail any .
+
+    - stage: deploy
+      if: tag =~ ^[0-9]\.[0-9]\.[0-9]$
+      script:
+        - openssl aes-256-cbc -K $encrypted_b45d6f20bf91_key -iv $encrypted_b45d6f20bf91_iv
+          -in .travis/secret_keys.tar.enc -out .travis/secret_keys.tar -d
+        - tar xf .travis/secret_keys.tar -C .travis
+        - bundle exec stove login --username express42 --key .travis/express42.pem
+        - bundle exec stove --no-git
+
 notifications:
   slack:
     secure: M7REbNB5Wf6eMBxQijnquWw4KlBbrw5zLM6fWqB1CjA3IF7DbYFUgvBTeUAxTFE9P2KEahYydPRkhzDtQ49PpE31g93yfy1yqQ/1rBHuzmZztR1hpwzYAhzGg4cak/47LQPaHx6Y9Pa83N8BPwpE4t9936wB3gXBlQERQdGdmoE=
-env:
-  global:
-  - KITCHEN_YAML=.kitchen.cloud.yml
-  - secure: Ag8Zn5lQxHrj+Xi79FAKiyq1mJxos+eQe6rL3xrk0aDL10YuAbbYz32jOce1MlIvTsEl4uaVQXQXIJmHjbCqzf5m61FYqRMqVhQ8B+Sh3AYiGe1MYpl9KJSYleyJPqJBDBZ/xfLpDKX7PoUCgXpHm2ZION2YFBHdRx3tN/lejoU=
-  - secure: FAO//JQqC+rY3ce19GjA/KWpNskY2nT+8i83WyueHZ20zIc6FMdkWOs+WcEcnfcXDG8GBCqiIG+wF1GajUWirWo+aEIjIguADJhZwuLqD4g6KDmRW9p1MB2b3XDvAbvzze7yy6uG9GcuhiKo+J3S33YugFD59UHGa7hCGeEukAo=

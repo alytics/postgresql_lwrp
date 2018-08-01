@@ -1,11 +1,11 @@
-[![Chef cookbook](https://img.shields.io/cookbook/v/postgresql_lwrp.svg)](https://github.com/express42-cookbooks/postgresql_lwrp)
-[![Code Climate](https://codeclimate.com/github/express42-cookbooks/postgresql_lwrp/badges/gpa.svg)](https://codeclimate.com/github/express42-cookbooks/postgresql_lwrp)
-[![Build Status](https://travis-ci.org/express42-cookbooks/postgresql_lwrp.svg)](https://travis-ci.org/express42-cookbooks/postgresql_lwrp)
+[![Chef cookbook](https://img.shields.io/cookbook/v/postgresql_lwrp.svg)](https://github.com/express42/postgresql_lwrp)
+[![Code Climate](https://codeclimate.com/github/express42/postgresql_lwrp/badges/gpa.svg)](https://codeclimate.com/github/express42/postgresql_lwrp)
+[![Build Status](https://travis-ci.org/express42/postgresql_lwrp.svg)](https://travis-ci.org/express42/postgresql_lwrp)
 
 Description
 ===========
-This cookbook includes recipes and providers to install and configure postgresql database. This cookbook was tested with Postgresql 9.0, 9.1, 9.2, 9.3. Version 9.0 is supported with limitations: creating users and databases are not working, also 9.0 not supported in Ubuntu 16.04 and Debian Jessie.
-Supported platforms: Debian Squeeze/Wheezy/Jessie and Ubuntu 12.04/14.04/16.04.
+This cookbook includes recipes and providers to install and configure postgresql database. This cookbook was tested with Postgresql 9.1, 9.2, 9.3, 9.4, 9.5, 9.6 & 10.
+Supported platforms: Debian Jessie/Stretch and Ubuntu 14.04/16.04.
 
 Changelog
 =========
@@ -13,11 +13,15 @@ See CHANGELOG.md
 
 Requirements
 ============
-Minimal chef-client version is 11.14.2.
+
+The minimal recommended version of chef-client is `13.0.113`. It may still work on version `12.5.1` and older, but no tests are made starting from version `1.3.0` of this cookbook as Chef 12 is reaching its EOL in the April, 2018
 
 Dependencies
 ============
-Postgresql cookbook depends on apt cookbook.
+
+* apt
+* cron
+* poise-python
 
 Attributes
 ==========
@@ -164,9 +168,9 @@ postgresql_cloud_backup 'main' do
   full_backup_time weekday: '*', month: '*', day: '*', hour: '3', minute: '0'
   # Data bag item should contain following keys for S3 protocol:
   # aws_access_key_id, aws_secret_access_key, wale_s3_prefix
-  params Chef::EncryptedDataBagItem.load('s3', 'secrets').to_hash.select {|i| i != "id"}
+  parameters Chef::EncryptedDataBagItem.load('s3', 'secrets').to_hash.select {|i| i != "id"}
   # Or just a hash, if you don't use data bags:
-  params { aws_access_key_id: 'access_key', aws_secret_access_key: 'secret_key', wale_s3_prefix: 's3_prefix' }
+  parameters { aws_access_key_id: 'access_key', aws_secret_access_key: 'secret_key', wale_s3_prefix: 's3_prefix' }
   protocol 's3'
   # In case you need to prepend wal-e with, for example, traffic limiter
   # you can use following method:
@@ -184,7 +188,7 @@ $ /opt/wal-e/bin/postgresql_cloud_backup_helper.sh main 9.3 count
 31
 ```
 
-Example of how to install extensions from postgresql-contrib 
+Example of how to install extensions from postgresql-contrib
 NOTE: schema and version are optional parameters, but others are required
 
 ```ruby
@@ -195,7 +199,7 @@ postgresql_extension 'cube' do
   schema 'public'
 end
 ```
-Example of how to install extensions from http://pgxn.org/ 
+Example of how to install extensions from http://pgxn.org/
 NOTE: schema is an optional parameter, but others are required
 
 ```ruby
@@ -209,22 +213,10 @@ end
 ```
 
 
+# License and Maintainer
 
+Maintainer:: LLC Express 42 (<cookbooks@express42.com>)
+Source:: https://github.com/express42/postgresql_lwrp
+Issues:: https://github.com/express42/postgresql_lwrp/issues
 
-License and Author
-==================
-
-Author:: Nikita Borzykh (<nikita@express42.com>)
-
-Copyright (C) 2012-2016 LLC Express 42
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-of the Software, and to permit persons to whom the Software is furnished to do
-so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+License:: MIT

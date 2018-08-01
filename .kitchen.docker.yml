@@ -1,0 +1,206 @@
+---
+driver:
+  name: docker
+  use_sudo: false
+  privileged: true
+
+provisioner:
+  name: chef_zero
+
+verifier:
+  name: inspec
+  inspec_tests:
+    - path: test/integration/postgresql_lwrp_test
+
+platforms:
+  - name: debian-8-docker
+    driver_config:
+      image: debian:8
+      disable_upstart: false
+      run_command: '/sbin/init'
+      provision_command:
+        # For postgreqsl
+        - echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
+        - apt-get install -y locales && locale-gen en_US.UTF-8
+        # Netstat for Serverspec
+        - apt-get install -y net-tools
+
+  - name: debian-9-docker
+    driver_config:
+      image: debian:9
+      disable_upstart: false
+      run_command: '/lib/systemd/systemd'
+      provision_command:
+        # For postgreqsl
+        - echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
+        - apt-get install -y locales && locale-gen en_US.UTF-8
+        # Netstat for Serverspec
+        - apt-get install -y net-tools
+        # gnupg for Chef
+        - apt-get install -y gnupg
+
+  - name: ubuntu-14.04-docker
+    driver_config:
+      image: ubuntu-upstart:14.04
+      disable_upstart: false
+      run_command: '/sbin/init'
+      provision_command:
+        # Netstat for Serverspec
+        - apt-get install -y net-tools
+
+
+  - name: ubuntu-16.04-docker
+    driver_config:
+      image: ubuntu:16.04
+      run_command: '/sbin/init'
+      provision_command:
+        # For systemd
+        - systemctl set-default multi-user.target
+        # For postgreqsl
+        - apt-get install -y locales && locale-gen en_US.UTF-8
+        # Netstat for Serverspec
+        - apt-get install -y net-tools
+
+  - name: ubuntu-18.04-docker
+    driver_config:
+      image: ubuntu:18.04
+      run_command: '/sbin/init'
+      provision_command:
+        - apt-get install -y locales && locale-gen en_US.UTF-8
+        # For systemd
+        - systemctl set-default multi-user.target
+        # Netstat for Inspec
+        - apt-get install -y net-tools
+        # gnupg for Chef
+        - apt-get install -y gnupg
+
+suites:
+  - name: pg-96-chef13
+    provisioner:
+      name: chef_zero
+    run_list:
+      - recipe[apt]
+      - recipe[pgtest::test]
+    attributes:
+      pgtest:
+        version: '9.6'
+    verifier:
+      attributes:
+        pg_version: 9.6
+    provisioner:
+      product_name: chef
+      product_version: 13
+
+  - name: pg-10-chef13
+    provisioner:
+      name: chef_zero
+    run_list:
+      - recipe[apt]
+      - recipe[pgtest::test]
+    attributes:
+      pgtest:
+        version: '10'
+    verifier:
+      attributes:
+        pg_version: 10
+    provisioner:
+      product_name: chef
+      product_version: 13
+
+  - name: pg-91-chef14
+    provisioner:
+      name: chef_zero
+    run_list:
+      - recipe[apt]
+      - recipe[pgtest::test]
+    attributes:
+      pgtest:
+        version: '9.1'
+    verifier:
+      attributes:
+        pg_version: 9.1
+    excludes:
+      # There is no official postgresql-9.1 package for Debian 9 & Ubuntu 18.04
+      - debian-9-docker
+      - ubuntu-18.04-docker
+
+  - name: pg-92-chef14
+    provisioner:
+      name: chef_zero
+    run_list:
+      - recipe[apt]
+      - recipe[pgtest::test]
+    attributes:
+      pgtest:
+        version: '9.2'
+    verifier:
+      attributes:
+        pg_version: 9.2
+    excludes:
+      # There is no official postgresql-9.2 package for Ubuntu 18.04
+      - ubuntu-18.04-docker
+
+  - name: pg-93-chef14
+    provisioner:
+      name: chef_zero
+    run_list:
+      - recipe[apt]
+      - recipe[pgtest::test]
+    attributes:
+      pgtest:
+        version: '9.3'
+    verifier:
+      attributes:
+        pg_version: 9.3
+
+  - name: pg-94-chef14
+    provisioner:
+      name: chef_zero
+    run_list:
+      - recipe[apt]
+      - recipe[pgtest::test]
+    attributes:
+      pgtest:
+        version: '9.4'
+    verifier:
+      attributes:
+        pg_version: 9.4
+
+  - name: pg-95-chef14
+    provisioner:
+      name: chef_zero
+    run_list:
+      - recipe[apt]
+      - recipe[pgtest::test]
+    attributes:
+      pgtest:
+        version: '9.5'
+    verifier:
+      attributes:
+        pg_version: 9.5
+
+  - name: pg-96-chef14
+    provisioner:
+      name: chef_zero
+    run_list:
+      - recipe[apt]
+      - recipe[pgtest::test]
+    attributes:
+      pgtest:
+        version: '9.6'
+    verifier:
+      attributes:
+        pg_version: 9.6
+
+  - name: pg-10-chef14
+    provisioner:
+      name: chef_zero
+    run_list:
+      - recipe[apt]
+      - recipe[pgtest::test]
+    attributes:
+      pgtest:
+        version: '10'
+    verifier:
+      attributes:
+        pg_version: 10

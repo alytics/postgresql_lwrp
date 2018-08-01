@@ -8,6 +8,7 @@ end
 
 postgresql 'main' do
   cluster_create_options('locale' => 'en_US.UTF-8')
+  cluster_version node['pgtest']['version']
   configuration(
     listen_addresses: '*',
     max_connections: 300,
@@ -22,7 +23,7 @@ postgresql 'main' do
   hba_configuration(
     [
       { type: 'host', database: 'all', user: 'all', address: '0.0.0.0/0', method: 'md5' },
-      { type: 'host', database: 'replication', user: 'postgres', address: '127.0.0.1/32', method: 'trust' }
+      { type: 'host', database: 'replication', user: 'postgres', address: '127.0.0.1/32', method: 'trust' },
     ]
   )
 end

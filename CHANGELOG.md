@@ -1,8 +1,57 @@
+## 1.4.2 (May 22, 2018)
+
+* (New) Ubuntu 18.04 tests
+* (New) Test Kitchen configuration for AWS cloud was removed
+* (Fix) cookbook `poise-python` version was restricted again `>= 1.7.0`
+* (Fix) Some minor Test Kitchen configuration improvements
+
+## 1.4.1 (May 15, 2018)
+
+* (Fix) Unpin `poise-python` cookbook version
+
+## 1.4.0 (Apr 10, 2018)
+
+* (New) Chef 14 support & tests
+* (New) LWRP-defined resources were rewritten using the new custom resource style
+* (Fix) TravisCI: all Chef 13 test were enabled
+
+## 1.3.1 (Apr 03, 2018)
+* (Fix) TravisCI build method. Now using `sethvargo/stove` gem instead of `dpl`
+
+## 1.3.0 (Apr 03, 2018)
+* (New) Chef 12 test were dropped. (Chef 12 reaches EOL at the and of April 2018)
+* (New) Chef 13 full support;
+* (New) WAL-E version 1.1.0;
+* (New) `poise-python` cookbook is used instead of outdated `python`;
+* (Fix) TravisCI configuration was updated to test against more OSes and to use Chef 13;
+* (Fix) Berksfile version pins were removed;
+
+## 1.2.4 (Mar 12, 2018)
+* (Fix) Rename `params` method in `postgresql_cloud_backup` for compatibility with Chef 13
+
+## 1.2.3 (Jan 31, 2018)
+* (Fix) Resource `postgresql` PostgreSQL version validation.
+* (Fix) Use resource attributes to set PostgreSQL version for test purposes.
+
+## 1.2.2 (Jan 16, 2018)
+* (New) PostgreSQL 10 support.
+* (New) Integration tests were migrated to InSpec.
+* (New) InSpec resources: postgres_database
+* (Fix) InSpec resources: `postgres_cluster`, `postgres_extension` & `postgres_user` were refactored.
+* (Fix) Test Kitchen: use one test recipe instead of one-recipe-per-pg-version.
+* (Fix) Test Kitchen: use only official images.
+* (Fix) Test Kitchen: tests for Chef 11 support were removed, as outdated.
+* (Fix) Test Kitchen: Test for Postgresql 9.0 were removed; there is PostgreSQL 9.0 package on modern systems.
+* (Fix) [postgresql] fix ruby_block notifications.
+* (Fix) [pgtest] user creation should be invoked using `encrypted_password` attribute for better compatibility.
+
+## 1.2.1 (Dec 15, 2016)
+* (New) Autoremove checkpoint_segments from configuration if pg > 9.4
+
 ## 1.2.0 (Jul 22, 2016)
 * (New) Add extension lwrp to install extensions from postgresql-contrib subpackage, which comes installed
 * (New) Add pgxn extension lwrp to install extensions from pgxn.org website, using pgxn client
 * (New) Add test recipes for installing extensions with newly introduced resources
-
 
 ## 1.1.15 (Sep 24, 2015)
 * (Fix) [postgresql] Fix initial slave creation on 9.1

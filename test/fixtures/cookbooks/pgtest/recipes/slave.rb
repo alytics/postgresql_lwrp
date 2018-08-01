@@ -2,12 +2,17 @@ include_recipe 'postgresql_lwrp::apt_official_repository'
 include_recipe 'postgresql_lwrp::default'
 include_recipe 'sysctl::default'
 
+service 'postgresql' do
+  action :restart
+end
+
 sysctl_param 'kernel.shmmax' do
   value 68_719_476_736
 end
 
 postgresql 'slave' do
   cluster_create_options('locale' => 'en_US.UTF-8')
+  cluster_version node['pgtest']['version']
   configuration(
     port: '5433',
     listen_addresses: '*',
@@ -20,7 +25,7 @@ postgresql 'slave' do
   )
   hba_configuration(
     [
-      { type: 'host', database: 'all', user: 'all', address: '0.0.0.0/0', method: 'md5' }
+      { type: 'host', database: 'all', user: 'all', address: '0.0.0.0/0', method: 'md5' },
     ]
   )
   replication(
